@@ -987,4 +987,37 @@ router.get('/adviser-missing-fields', async (req, res) => {
     }
 });
 
+// Get venue locations with panel counts
+router.get('/venue-locations', async (req, res) => {
+    const { season } = req.query;
+    try {
+        const query = `
+            SELECT 
+                pv.name as venue_name,
+                COUNT(*) as panel_count,
+                CASE
+                    WHEN pv.name = 'Woking' THEN json_build_array(51.2454, -0.5616)
+                    WHEN pv.name = 'Shallowford' THEN json_build_array(52.9065, -2.1492)
+                    WHEN pv.name = 'Wydale' THEN json_build_array(54.2397, -0.5297)
+                    WHEN pv.name = 'Pleshey' THEN json_build_array(51.7977, 0.4135)
+                    WHEN pv.name = 'Launde' THEN json_build_array(52.6213, -0.8379)
+                    WHEN pv.name = 'Ammerdown' THEN json_build_array(51.2856, -2.4139)
+                    WHEN pv.name = 'Foxhill' THEN json_build_array(53.2729, -2.7243)
+                END as position
+            FROM panels p
+            JOIN panel_venues pv ON p.venue_id = pv.id
+            WHERE pv.name != 'Online'
+            ${season ? 'AND public.calculate_season(p.panel_date) = $1' : ''}
+            GROUP BY pv.name
+            ORDER BY panel_count DESC;
+        `;
+        
+        const result = await pool.query(query, season ? [season] : []);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching venue locations:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 export default router;

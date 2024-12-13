@@ -12,6 +12,7 @@ import { BarChart3, Users, UserSquare2, Calendar, TrendingUp } from 'lucide-reac
 import { AdviserEngagement } from './AdviserEngagement';
 import { AdviserStats } from './AdviserStats';
 import { VenueStatsBySeason } from './VenueStatsBySeason';
+import { VenueMap } from './VenueMap';
 
 interface Stats {
   total_carousels: number;
@@ -230,6 +231,11 @@ export const StatsDashboard: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Venue Statistics</h3>
                 <p className="text-sm text-gray-500 mb-6">Detailed venue utilisation and capacity metrics</p>
                 <VenueStats season={selectedSeason} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Venue Distribution</h3>
+                <p className="text-sm text-gray-500 mb-6">Geographical distribution of panel venues</p>
+                <VenueMap season={selectedSeason} />
               </div>
             </div>
           )}
