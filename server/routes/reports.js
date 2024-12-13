@@ -1020,4 +1020,92 @@ router.get('/venue-locations', async (req, res) => {
     }
 });
 
+// Get candidate progression times
+router.get('/progression-times', async (req, res) => {
+    const { season } = req.query;
+    try {
+        const query = `
+            WITH panels_with_season AS (
+                SELECT *, calculate_season(panel_date) as calculated_season FROM panels
+            ),
+            candidate_journey AS (
+                SELECT 
+                    c.id as attendee_id,
+                    MIN(CASE WHEN p.panel_type = 'Carousel' THEN p.panel_date END) as carousel_date,
+                    MIN(CASE WHEN p.panel_type = 'Panel' THEN p.panel_date END) as panel_date,
+                    MAX(CASE WHEN p.panel_type = 'Carousel' THEN 1 ELSE 0 END) as attended_carousel,
+                    MAX(CASE WHEN p.panel_type = 'Panel' THEN 1 ELSE 0 END) as attended_panel
+                FROM candidates c
+                LEFT JOIN panel_attendees pa ON c.id = pa.attendee_id AND pa.attendee_type = 'C'
+                LEFT JOIN panels_with_season p ON pa.panel_id = p.id
+                WHERE 1=1 ${season ? 'AND p.calculated_season = $1' : ''}
+                GROUP BY c.id
+                HAVING MAX(CASE WHEN p.panel_type = 'Carousel' THEN 1 ELSE 0 END) = 1 
+                AND MAX(CASE WHEN p.panel_type = 'Panel' THEN 1 ELSE 0 END) = 1
+            ),
+            all_progressions AS (
+                SELECT 
+                    attendee_id,
+                    carousel_date,
+                    panel_date,
+                    panel_date - carousel_date as days_between
+                FROM candidate_journey
+                WHERE carousel_date IS NOT NULL 
+                AND panel_date IS NOT NULL
+                AND panel_date > carousel_date
+                AND panel_date - carousel_date <= 730
+            ),
+            filtered_records AS (
+                SELECT * FROM all_progressions 
+                WHERE days_between >= 42
+            ),
+            distribution AS (
+                SELECT 
+                    CASE 
+                        WHEN days_between <= 90 THEN '6 weeks - 3 months'
+                        WHEN days_between <= 180 THEN '3-6 months'
+                        WHEN days_between <= 270 THEN '6-9 months'
+                        WHEN days_between <= 365 THEN '9-12 months'
+                        ELSE 'Over 1 year'
+                    END as time_range,
+                    COUNT(*) as count,
+                    ROUND(COUNT(*)::numeric / (SELECT COUNT(*) FROM filtered_records) * 100, 1) as percentage
+                FROM filtered_records
+                GROUP BY time_range
+            )
+            SELECT 
+                json_build_object(
+                    'summary', (
+                        SELECT json_build_object(
+                            'avg_days', AVG(days_between),
+                            'median_days', PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY days_between),
+                            'min_days', MIN(days_between),
+                            'max_days', MAX(days_between),
+                            'total_candidates', COUNT(*)
+                        )
+                        FROM filtered_records
+                    ),
+                    'outliers', (
+                        SELECT json_build_object(
+                            'total_records', COUNT(*),
+                            'filtered_too_short', COUNT(*) FILTER (WHERE days_between < 42),
+                            'filtered_too_long', COUNT(*) FILTER (WHERE days_between > 730)
+                        )
+                        FROM all_progressions
+                    ),
+                    'distribution', (
+                        SELECT json_agg(row_to_json(d))
+                        FROM distribution d
+                    )
+                ) as stats;
+        `;
+        
+        const result = await pool.query(query, season ? [season] : []);
+        res.json(result.rows[0].stats);
+    } catch (error) {
+        console.error('Error fetching progression times:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 export default router;

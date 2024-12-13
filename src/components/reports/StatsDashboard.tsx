@@ -13,6 +13,7 @@ import { AdviserEngagement } from './AdviserEngagement';
 import { AdviserStats } from './AdviserStats';
 import { VenueStatsBySeason } from './VenueStatsBySeason';
 import { VenueMap } from './VenueMap';
+import { ProgressionStats } from './ProgressionStats';
 
 interface Stats {
   total_carousels: number;
@@ -196,6 +197,7 @@ export const StatsDashboard: React.FC = () => {
                 season={selectedSeason} 
                 onDioceseDataLoad={setDioceseStats} 
               />
+              <ProgressionStats />
               <DioceseCandidateStats dioceseStats={dioceseStats} />
             </div>
           )}
