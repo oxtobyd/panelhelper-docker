@@ -327,6 +327,60 @@ router.get('/panel-outcomes', async (req, res) => {
     }
 });
 
+// Get panel outcome statistics
+router.get('/outcome-stats', async (req, res) => {
+  try {
+    const { season } = req.query;
+    let seasonFilter = '';
+    if (season) {
+      seasonFilter = 'WHERE calculated_season = $1';
+    }
+
+    const query = `
+      WITH normalized_outcomes AS (
+        SELECT 
+          CASE 
+            WHEN panel_result_text ILIKE '%recommended with suggested preparation%' 
+              OR panel_result_text ILIKE '%recommendedwithsuggestedpreparation%' 
+              THEN 'Recommended with Preparation'
+            WHEN panel_result_text ILIKE '%conditionally recommended%' 
+              OR panel_result_text ILIKE '%conditionallyrecommended%' 
+              THEN 'Conditionally Recommended'
+            WHEN panel_result_text ILIKE '%not yet ready%' 
+              OR panel_result_text ILIKE '%notyetreadytoproceed%' 
+              THEN 'Not Yet Ready'
+            WHEN panel_result_text ILIKE '%advice not to proceed%' 
+              OR panel_result_text ILIKE '%advicenottoproceed%' 
+              THEN 'Advice Not to Proceed'
+            WHEN panel_result_text ILIKE '%recommended%' 
+              THEN 'Recommended'
+            ELSE panel_result_text 
+          END as outcome,
+          (love_for_god + call_to_ministry + love_for_people + wisdom + fruitfulness + potential) / 6.0 as avg_score
+        FROM panel_outcomes
+        ${seasonFilter}
+        WHERE panel_result_text IS NOT NULL
+      )
+      SELECT 
+        outcome,
+        COUNT(*) as count,
+        ROUND(AVG(avg_score), 2) as average_score,
+        ROUND(MIN(avg_score), 2) as min_score,
+        ROUND(MAX(avg_score), 2) as max_score
+      FROM normalized_outcomes
+      GROUP BY outcome
+      ORDER BY average_score DESC;
+    `;
+
+    const params = season ? [season] : [];
+    const result = await pool.query(query, params);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching outcome stats:', error);
+    res.status(500).json({ error: 'Failed to fetch outcome statistics' });
+  }
+});
+
 // Get venue statistics
 router.get('/venue-stats', async (req, res) => {
     try {

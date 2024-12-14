@@ -14,6 +14,7 @@ import { AdviserStats } from './AdviserStats';
 import { VenueStatsBySeason } from './VenueStatsBySeason';
 import { VenueMap } from './VenueMap';
 import { ProgressionStats } from './ProgressionStats';
+import { useQuery } from '@tanstack/react-query';
 
 interface Stats {
   total_carousels: number;
@@ -34,6 +35,14 @@ interface Stats {
   byDiocese: { diocese_name: string; total_candidates: number }[];
 }
 
+interface OutcomeStats {
+  outcome: string;
+  count: number;
+  average_score: number;
+  min_score: number;
+  max_score: number;
+}
+
 export const StatsDashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [seasons, setSeasons] = useState<string[]>([]);
@@ -42,6 +51,15 @@ export const StatsDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [dioceseStats, setDioceseStats] = useState<{ diocese_name: string; total_candidates: number; }[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'candidates' | 'advisers' | 'venues'>('overview');
+
+  const { data: outcomeStats } = useQuery<OutcomeStats[]>({
+    queryKey: ['outcomeStats', selectedSeason],
+    queryFn: async () => {
+      const response = await fetch(`/api/reports/outcome-stats${selectedSeason ? `?season=${selectedSeason}` : ''}`);
+      if (!response.ok) throw new Error('Failed to fetch outcome statistics');
+      return response.json();
+    }
+  });
 
   useEffect(() => {
     const fetchSeasons = async () => {
@@ -95,6 +113,14 @@ export const StatsDashboard: React.FC = () => {
     { id: 'advisers', label: 'Advisers', icon: Users },
     { id: 'venues', label: 'Venues & Schedule', icon: Calendar },
   ];
+
+  const outcomeColors: Record<string, string> = {
+    'Recommended': '#22c55e',  // stronger green
+    'Recommended with Preparation': '#4ade80',  // medium green
+    'Not Yet Ready': '#3b82f6',  // vibrant blue
+    'Advice Not to Proceed': '#ef4444',  // vibrant red
+    'Conditionally Recommended': '#f97316'  // vibrant orange
+  };
 
   return (
     <div className="space-y-8 p-8">
@@ -187,6 +213,41 @@ export const StatsDashboard: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Panel Outcomes</h3>
                 <p className="text-sm text-gray-500 mb-6">Summary of panel decisions and recommendations</p>
                 <PanelOutcomes season={selectedSeason} />
+              </div>
+
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-4">Panel Outcome Statistics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {outcomeStats?.map(stat => (
+                    <div key={stat.outcome} className="bg-white rounded-lg shadow p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-900">{stat.outcome}</h4>
+                        <span className="text-sm text-gray-500">{stat.count} candidates</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-500">Average Score</span>
+                          <span className="font-semibold">{stat.average_score}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm text-gray-500">
+                          <span>Range</span>
+                          <span>{stat.min_score} - {stat.max_score}</span>
+                        </div>
+                        <div className="relative pt-1">
+                          <div className="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                            <div
+                              style={{
+                                width: `${(stat.average_score / 7) * 100}%`,
+                                backgroundColor: outcomeColors[stat.outcome] || '#6B7280'
+                              }}
+                              className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
