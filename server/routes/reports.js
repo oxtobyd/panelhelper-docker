@@ -995,20 +995,17 @@ router.get('/venue-locations', async (req, res) => {
             SELECT 
                 pv.name as venue_name,
                 COUNT(*) as panel_count,
-                CASE
-                    WHEN pv.name = 'Woking' THEN json_build_array(51.2454, -0.5616)
-                    WHEN pv.name = 'Shallowford' THEN json_build_array(52.9065, -2.1492)
-                    WHEN pv.name = 'Wydale' THEN json_build_array(54.2397, -0.5297)
-                    WHEN pv.name = 'Pleshey' THEN json_build_array(51.7977, 0.4135)
-                    WHEN pv.name = 'Launde' THEN json_build_array(52.6213, -0.8379)
-                    WHEN pv.name = 'Ammerdown' THEN json_build_array(51.2856, -2.4139)
-                    WHEN pv.name = 'Foxhill' THEN json_build_array(53.2729, -2.7243)
+                CASE 
+                    WHEN vl.latitude IS NOT NULL AND vl.longitude IS NOT NULL 
+                    THEN json_build_array(vl.latitude, vl.longitude)
+                    ELSE NULL
                 END as position
             FROM panels p
             JOIN panel_venues pv ON p.venue_id = pv.id
+            LEFT JOIN venue_locations vl ON pv.name = vl.venue_name
             WHERE pv.name != 'Online'
             ${season ? 'AND public.calculate_season(p.panel_date) = $1' : ''}
-            GROUP BY pv.name
+            GROUP BY pv.name, vl.latitude, vl.longitude
             ORDER BY panel_count DESC;
         `;
         
