@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, LayoutGrid, Calendar, Settings, BarChart, Upload } from 'lucide-react';
+import { ClipboardList, LayoutGrid, Calendar, Settings, BarChart, Upload, BarChart2, Home, FileSpreadsheet } from 'lucide-react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
@@ -33,6 +33,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       label: 'Import',
       href: '/import',
       description: 'Import Excel data'
+    },
+    {
+      icon: <Settings className="w-6 h-6" />,
+      label: 'Settings',
+      href: '/settings',
+      description: 'Manage venue locations'
     },
   ];
 

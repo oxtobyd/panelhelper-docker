@@ -9,6 +9,7 @@ import analyticsRouter from './routes/analytics.js';
 import calendarRouter from './routes/calendar.js';
 import reportsRouter from './routes/reports.js';
 import importRouter from './routes/import.js';
+import venuesRouter from './routes/venues.js';
 
 import { pool } from './db.js';
 
@@ -27,6 +28,7 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/calendar', calendarRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/import', importRouter);
+app.use('/api/venues', venuesRouter);
 console.log('Calendar routes registered');
 
 // Add a catch-all route for debugging

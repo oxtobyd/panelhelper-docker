@@ -10,6 +10,7 @@ import { Dashboard } from './components/Dashboard';
 import { Analytics } from './components/Analytics';
 import { StatsDashboard } from './components/reports/StatsDashboard';
 import { ImportPage } from './components/import/ImportPage';
+import SettingsPage from './components/settings/SettingsPage';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/reports" element={<StatsDashboard />} />
               <Route path="/import" element={<ImportPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </div>
         </Layout>
