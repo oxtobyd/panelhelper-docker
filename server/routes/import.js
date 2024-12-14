@@ -71,7 +71,8 @@ const TABLE_FIELD_TYPES = {
     'include': 'boolean',
     'create_date': 'timestamp',
     'created_by': 'integer',
-    'status': 'char'
+    'status': 'char',
+    'venue_url': 'varchar'
   },
   'panels': {
     'id': 'bigint',
@@ -176,7 +177,13 @@ const TABLE_FIELD_TYPES = {
     'attendee_type': 'varchar',
     'attendee_diocese_id': 'bigint',
     'attendee_gender': 'varchar',
-    'season': 'integer'
+    'season': 'integer',
+    'mfa_or_pfa': 'char',
+    'mp1_or_2': 'char',
+    'attendee_team': 'varchar',
+    'last_updated_date': 'timestamp',
+    'batch_id': 'bigint',
+    'attendance_request_id': 'bigint'
   },
   'cc_outcomes': {
     'id': 'bigint',
@@ -253,45 +260,153 @@ const DATE_ONLY_FIELDS = [
 // Define column mapping for specific tables
 const TABLE_COLUMN_MAPPING = {
   'parent_diocese': {
-    'p_b_diocese_id': 'pb_diocese_id'
+    'ParentDioceseName': 'parent_diocese_name',
+    'DioceseProvince': 'diocese_province',
+    'DioceseCathedral': 'diocese_cathedral',
+    'DioceseNumber': 'diocese_number',
+    'PBDioceseID': 'pb_diocese_id',
+    'InUse': 'in_use'
   },
   'advisers': {
-    'p_m_f_a': 'p_mfa',
-    'p_p_f_a': 'p_pfa',
-    'is_d_d_o': 'is_ddo',
-    'is_a_d_d_o': 'is_addo',
-    'diocese_i_d': 'diocese_id',
-    'portal_i_d': 'portal_id'
+    'DioceseID': 'diocese_id',
+    'PortalID': 'portal_id',
+    'CreateDate': 'create_date',
+    'DateOfBirth': 'date_of_birth',
+    'Active': 'active',
+    'hometel': 'hometel',
+    'worktel': 'worktel',
+    'Email': 'email',
+    'Gender': 'gender',
+    'P_Lay': 'p_lay',
+    'P_MFA': 'p_mfa',
+    'P_PFA': 'p_pfa',
+    'P_Gender': 'p_gender',
+    'IsDDO': 'is_ddo',
+    'IsADDO': 'is_addo'
+  },
+  'panel_venues': {
+    'Active': 'active',
+    'code': 'code',
+    'name': 'name',
+    'add1': 'add1',
+    'add2': 'add2',
+    'add3': 'add3',
+    'postcode': 'postcode',
+    'tel': 'tel',
+    'Status': 'status',
+    'Include': 'include',
+    'VenueURL': 'venue_url',
+    'DefaultAdviserCount': 'default_adviser_count',
+    'DefaultCandidateCount': 'default_candidate_count',
+    'CreateDate': 'create_date',
+    'CreatedBy': 'created_by'
+  },
+  'panel_attendees': {
+    'ID': 'id',
+    'CreatedDate': 'created_date',
+    'CreatedBy': 'created_by',
+    'PanelID': 'panel_id',
+    'AttendeeID': 'attendee_id',
+    'AttendeeType': 'attendee_type',
+    'AttendeeDioceseID': 'attendee_diocese_id',
+    'AttendeeGender': 'attendee_gender',
+    'Season': 'season',
+    'MFAorPFA': 'mfa_or_pfa',
+    'MP1or2': 'mp1_or_2',
+    'AttendeeTeam': 'attendee_team',
+    'LastUpdatedDate': 'last_updated_date',
+    'BatchID': 'batch_id',
+    'AttendanceRequestID': 'attendance_request_id'
   },
   'candidates': {
-    'p_a_t_id_c_c': 'patid_cc',
-    'p_a_t_id_p_l': 'patid_pl',
-    'create_date': 'create_date',
-    'date_of_birth': 'date_of_birth',
-    'last_status_change_date': 'last_status_change_date',
-    'last_interaction_date': 'last_interaction_date',
-    'mobile_number': 'mobile_number',
-    'p_b_id': 'pbid',
-    'p_u_n': 'pun',
-    'preferred_forename': 'preferred_forename',
-    'preferred_surname': 'preferred_surname',
-    'sponsoring_bishop': 'sponsoring_bishop',
-    'contact_a_a_d_o': 'contact_aado'
+    'PBID': 'pbid',
+    'PATID_CC': 'patid_cc',
+    'PATID_PL': 'patid_pl',
+    'ContactAADO': 'contact_aado',
+    'PUN': 'pun',
+    'CandidateNo': 'candidate_no',
+    'PortalID': 'portal_id',
+    'PortalCarouselStage': 'portal_carousel_stage',
+    'StatusID': 'status_id',
+    'TrainingStatus': 'training_status',
+    'CreateDate': 'create_date',
+    'LastStatusChangeDate': 'last_status_change_date',
+    'LastInteractionDate': 'last_interaction_date',
+    'DateOfBirth': 'date_of_birth',
+    'PreferredForename': 'preferred_forename',
+    'PreferredSurname': 'preferred_surname',
+    'TelephoneNumber': 'telephone_number',
+    'MobileNumber': 'mobile_number',
+    'SponsoringBishop': 'sponsoring_bishop',
+    'SponsoredMinistry': 'sponsored_ministry',
+    'CarouselSeason': 'carousel_season',
+    'CarouselName': 'carousel_name',
+    'CarouselFeedback': 'carousel_feedback',
+    'PanelSeason': 'panel_season',
+    'PanelName': 'panel_name',
+    'PanelRecommendation': 'panel_recommendation',
+    'DisabledInPortal': 'disabled_in_portal'
   },
   'cc_outcomes': {
-    'c_c1_value': 'cc1_value',
-    'c_c2_value': 'cc2_value',
-    'c_c3_value': 'cc3_value',
-    'c_c4_value': 'cc4_value',
-    'c_c5_value': 'cc5_value',
-    'c_c6_value': 'cc6_value',
-    's_c_c_c1_text': 'sccc1_text',
-    's_c_c_c2_text': 'sccc2_text',
-    's_c_c_c3_text': 'sccc3_text',
-    's_c_c_c4_text': 'sccc4_text',
-    's_c_c_c5_text': 'sccc5_text',
-    's_c_c_c6_text': 'sccc6_text',
-    's_c_summary_text': 'sc_summary_text'
+    'CandidateID': 'candidate_id',
+    'PortalCandidateID': 'portal_candidate_id',
+    'PanelAttendeesID': 'panel_attendees_id',
+    'Status': 'status',
+    'CreatedDate': 'created_date',
+    'EditedDate': 'edited_date',
+    'CompletedDate': 'completed_date',
+    'AvailableDate': 'available_date',
+    'NationalAdviserName': 'national_adviser_name',
+    'CC1Value': 'cc1_value',
+    'CC2Value': 'cc2_value',
+    'CC3Value': 'cc3_value',
+    'CC4Value': 'cc4_value',
+    'CC5Value': 'cc5_value',
+    'CC6Value': 'cc6_value',
+    'SCCC1Text': 'sccc1_text',
+    'SCCC2Text': 'sccc2_text',
+    'SCCC3Text': 'sccc3_text',
+    'SCCC4Text': 'sccc4_text',
+    'SCCC5Text': 'sccc5_text',
+    'SCCC6Text': 'sccc6_text',
+    'SCSummaryText': 'sc_summary_text'
+  },
+  'pl_recommendations': {
+    'CandidateID': 'candidate_id',
+    'PortalCandidateID': 'portal_candidate_id',
+    'Status': 'status',
+    'CreatedDate': 'created_date',
+    'EditedDate': 'edited_date',
+    'NationalAdviserName': 'national_adviser_name',
+    'CompletedDate': 'completed_date',
+    'AvailableDate': 'available_date',
+    'CreatedUser': 'created_user',
+    'LoveForGod': 'love_for_god',
+    'CallToMinistry': 'call_to_ministry',
+    'LoveForPeople': 'love_for_people',
+    'Wisdom': 'wisdom',
+    'Fruitfulness': 'fruitfulness',
+    'Potential': 'potential',
+    'PanelResultText': 'panel_result_text',
+    'PanelID': 'panel_id',
+    'BishopsDecision': 'bishops_decision'
+  },
+  'panels': {
+    'CreatedDate': 'created_date',
+    'PanelDate': 'panel_date',
+    'PanelTime': 'panel_time',
+    'FeedbackDate': 'feedback_date',
+    'FeedbackTime': 'feedback_time',
+    'PanelStatus': 'panel_status',
+    'PanelType': 'panel_type',
+    'PanelName': 'panel_name',
+    'PanelAdviserNumber': 'panel_adviser_number',
+    'PanelCandidateNumber': 'panel_candidate_number',
+    'VenueID': 'venue_id',
+    'PortalRef': 'portal_ref',
+    'AvailableToSelect': 'available_to_select',
+    'DSTMember': 'dst_member',
+    'HalfPanel': 'half_panel'
   }
 };
 
@@ -329,7 +444,7 @@ function processRowForInsertion(row, table) {
       const date = typeof value === 'number' ? excelSerialDateToJSDate(value) : new Date(value);
       processedRow[key] = date ? date.toISOString() : null;
     } else {
-      processedRow[key] = value;
+      processedRow[key] = transformValue(value, fieldType);
     }
   }
   return processedRow;
@@ -429,40 +544,54 @@ function calculateSeason(dateStr) {
 }
 
 // Helper function to transform column names
-function transformColumnName(excelColumn) {
-  // Special cases for ID fields and specific columns
-  if (excelColumn.toLowerCase() === 'id') return 'id';
-  if (excelColumn === 'IsADDO') return 'is_addo';
-  if (excelColumn === 'IsDDO') return 'is_ddo';
-  if (excelColumn === 'PBDioceseID') return 'pb_diocese_id';  // Special case for PBDioceseID
-  if (excelColumn.match(/^(is_)?[A-Z]+$/)) {  // Handle acronyms like DDO, ADDO
-    return excelColumn.toLowerCase();
-  }
+function toSnakeCase(str) {
+  // Special cases
+  if (str === 'VenueURL') return 'venue_url';
+  if (str === 'ID') return 'id';
+  if (str === 'PBDioceseID') return 'pb_diocese_id';
+  if (str === 'IsADDO') return 'is_addo';
+  if (str === 'IsDDO') return 'is_ddo';
+  if (str === 'PBID') return 'pbid';
+  if (str === 'PBDiocese') return 'pb_diocese';
+  if (str === 'PATID_CC') return 'patid_cc';
+  if (str === 'PATID_PL') return 'patid_pl';
+  if (str === 'ContactAADO') return 'contact_aado';
+  if (str === 'PUN') return 'pun';
   
   // Handle P_ prefix specially
-  if (excelColumn.startsWith('P_')) {
-    return 'p_' + transformColumnName(excelColumn.substring(2));
+  const isPPrefix = str.startsWith('P_');
+  if (isPPrefix) {
+    str = str.substring(2); // Remove P_ prefix
   }
-
-  // Convert PascalCase/camelCase to snake_case
-  return excelColumn
-    .replace(/([A-Z])/g, '_$1')
+  
+  // First handle sequences of uppercase letters (acronyms)
+  str = str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2');
+  
+  let result = str
+    // Then handle camelCase
+    .replace(/([a-z\d])([A-Z])/g, '$1_$2')
     .toLowerCase()
     .replace(/^_/, '')
     .replace(/\s+/g, '_')
-    // Clean up multiple underscores
-    .replace(/_+/g, '_')
-    // Special fixes for known columns
-    .replace('i_d', 'id')
-    .replace('diocese_i_d', 'diocese_id')
-    .replace('portal_i_d', 'portal_id')
-    .replace('p__', 'p_')
-    .replace('m_f_a', 'mfa')
-    .replace('p_f_a', 'pfa')
+    // Special replacements
     .replace('d_d_o', 'ddo')
     .replace('a_d_d_o', 'addo')
+    .replace('a_a_d_o', 'aado')
     .replace('d_s_t_member', 'dst_member')
-    .replace('created_date', 'created_date');
+    .replace('created_date', 'created_date')
+    .replace('_i_d', '_id')
+    .replace(/^i_d$/, 'id')
+    .replace('m_f_a', 'mfa')
+    .replace('p_f_a', 'pfa')
+    // Clean up any double underscores
+    .replace(/__+/g, '_');
+
+  // Add p_ prefix back if it was there
+  if (isPPrefix) {
+    result = 'p_' + result;
+  }
+
+  return result;
 }
 
 // Helper function to transform value based on field type
@@ -487,6 +616,31 @@ function transformValue(value, fieldType) {
     default:
       return value;
   }
+}
+
+// Convert Excel date number to ISO date string
+function excelDateToISO(excelDate) {
+  if (!excelDate) return null;
+  
+  // Excel dates are number of days since 1900-01-01
+  // But Excel incorrectly assumes 1900 was a leap year
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const baseDate = new Date('1899-12-30'); // Account for Excel's leap year bug
+  
+  // Get the whole days and fractional part
+  const days = Math.floor(excelDate);
+  const fraction = excelDate - days;
+  
+  // Calculate the date
+  const date = new Date(baseDate.getTime() + days * msPerDay);
+  
+  // Add the time if there's a fractional part
+  if (fraction) {
+    const millisInDay = fraction * msPerDay;
+    date.setMilliseconds(date.getMilliseconds() + millisInDay);
+  }
+  
+  return date.toISOString();
 }
 
 // Add debug logging for date conversions
@@ -539,7 +693,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     progress.total = IMPORT_ORDER.reduce((total, tableName) => {
       if (workbook.SheetNames.includes(tableName)) {
         const sheet = workbook.Sheets[tableName];
-        const data = xlsx.utils.sheet_to_json(sheet);
+        const data = xlsx.utils.sheet_to_json(sheet, {
+          defval: null
+        });
         return total + data.length;
       }
       return total;
@@ -555,54 +711,120 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       }
 
       const sheet = workbook.Sheets[tableName];
-      const jsonData = xlsx.utils.sheet_to_json(sheet);
+      if (tableName === 'PanelAttendees') {
+        // Get the range of the sheet
+        const range = xlsx.utils.decode_range(sheet['!ref']);
+        console.log('\nPanelAttendees Sheet Range:', range);
+        
+        // Get all column headers
+        const headers = [];
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const headerCell = sheet[xlsx.utils.encode_cell({r: range.s.r, c: C})];
+          headers.push(headerCell?.v);
+        }
+        console.log('All Excel Headers:', headers);
+
+        // Log a few rows of raw data
+        console.log('\nChecking first few rows of raw data:');
+        for (let R = range.s.r + 1; R <= Math.min(range.s.r + 3, range.e.r); ++R) {
+          const rowData = {};
+          for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cell = sheet[xlsx.utils.encode_cell({r: R, c: C})];
+            if (cell) {
+              rowData[headers[C]] = cell.v;
+            } else {
+              rowData[headers[C]] = null;
+            }
+          }
+          console.log('Raw row data:', rowData);
+        }
+      }
+      
+      const jsonData = xlsx.utils.sheet_to_json(sheet, {
+        defval: null
+      });
       
       if (jsonData.length > 0) {
         const dbTableName = TABLE_MAPPING[tableName];
         console.log(`Processing ${tableName} into ${dbTableName}`);
 
+        // Add detailed debug logging for panel attendees
+        if (tableName === 'PanelAttendees') {
+          console.log('Panel Attendees Excel Data Sample:');
+          console.log('Headers:', Object.keys(jsonData[0]));
+          
+          // Look at first 10 rows for MFA/PFA and MP1/2 data
+          console.log('\nChecking first 10 rows for MFA/PFA and MP1/2:');
+          jsonData.slice(0, 10).forEach((row, index) => {
+            if (row.MFAorPFA || row.MP1or2 || row['MFA or PFA'] || row['MP1 or 2']) {
+              console.log(`Row ${index}:`, {
+                mfa: row.MFAorPFA || row['MFA or PFA'],
+                mp: row.MP1or2 || row['MP1 or 2']
+              });
+            }
+          });
+          
+          // Also check a sample from middle of dataset
+          const mid = Math.floor(jsonData.length / 2);
+          console.log('\nChecking 5 rows from middle of dataset:');
+          jsonData.slice(mid, mid + 5).forEach((row, index) => {
+            if (row.MFAorPFA || row.MP1or2 || row['MFA or PFA'] || row['MP1 or 2']) {
+              console.log(`Mid Row ${index + mid}:`, {
+                mfa: row.MFAorPFA || row['MFA or PFA'],
+                mp: row.MP1or2 || row['MP1 or 2']
+              });
+            }
+          });
+        }
+
         // Transform all data first
-        const transformedData = jsonData.map((row) => {
+        const transformedData = await Promise.all(jsonData.map(async (row) => {
+          // For PanelAttendees, handle special fields separately
+          if (tableName === 'PanelAttendees') {
+            const transformedRow = {};
+            
+            // Handle all fields except MFAorPFA and MP1or2
+            for (const [key, value] of Object.entries(row)) {
+              if (key !== 'MFAorPFA' && key !== 'MP1or2') {
+                const snakeKey = toSnakeCase(key);
+                // Convert date fields
+                if (key === 'CreatedDate' || key === 'LastUpdatedDate') {
+                  transformedRow[snakeKey] = excelDateToISO(value);
+                } else {
+                  transformedRow[snakeKey] = value;
+                }
+              }
+            }
+
+            // Add the special fields with correct names
+            transformedRow.mfa_or_pfa = row.MFAorPFA;
+            transformedRow.mp1_or_2 = row.MP1or2;
+
+            return transformedRow;
+          }
+
+          const snakeCaseKeys = {};
+          for (const [key, value] of Object.entries(row)) {
+            snakeCaseKeys[toSnakeCase(key)] = value;
+          }
+
           const newRow = {};
           const fieldTypes = TABLE_FIELD_TYPES[dbTableName] || {};
 
-          for (const [key, value] of Object.entries(row)) {
-            let transformedKey = transformColumnName(key);
-            
+          for (const [key, value] of Object.entries(snakeCaseKeys)) {
             // Apply table-specific mapping if it exists
-            if (TABLE_COLUMN_MAPPING[dbTableName]?.[transformedKey]) {
-              transformedKey = TABLE_COLUMN_MAPPING[dbTableName][transformedKey];
+            let mappedKey = key;
+            if (TABLE_COLUMN_MAPPING[dbTableName]?.[key]) {
+              mappedKey = TABLE_COLUMN_MAPPING[dbTableName][key];
             }
 
             // Transform the value based on field type
-            const fieldType = fieldTypes[transformedKey];
-            if (value === null || value === undefined) {
-              newRow[transformedKey] = null;
-            } else if (typeof value === 'number') {
-              switch (fieldType) {
-                case 'timestamp':
-                  newRow[transformedKey] = excelDateToJSDate(value);
-                  break;
-                case 'date':
-                  newRow[transformedKey] = excelDateToJSDate(value).split(' ')[0];
-                  break;
-                case 'time':
-                  newRow[transformedKey] = excelTimeToPostgresTime(value);
-                  break;
-                case 'integer':
-                case 'bigint':
-                  newRow[transformedKey] = Math.round(value);
-                  break;
-                default:
-                  newRow[transformedKey] = value;
-              }
-            } else {
-              newRow[transformedKey] = value;
-            }
+            const fieldType = fieldTypes[mappedKey];
+            newRow[mappedKey] = transformValue(value, fieldType);
           }
 
           return newRow;
-        });
+        }));
 
         console.log('Sample row before transformation:', jsonData[0]);
         console.log('Sample row after transformation:', transformedData[0]);
@@ -728,6 +950,83 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     if (fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
+  }
+});
+
+// Test validation endpoint that doesn't affect the main import
+router.post('/validate', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const workbook = xlsx.read(fs.readFileSync(req.file.path));
+    const validation = {
+      sheets: {},
+      summary: {
+        total_sheets: 0,
+        sheets_with_issues: 0,
+        total_issues: 0
+      }
+    };
+
+    // Check each sheet in the workbook
+    for (const tableName of IMPORT_ORDER) {
+      if (!workbook.SheetNames.includes(tableName)) {
+        continue;
+      }
+
+      const worksheet = workbook.Sheets[tableName];
+      const headers = xlsx.utils.sheet_to_json(worksheet, { header: 1 })[0];
+      const dbTableName = TABLE_MAPPING[tableName];
+      const issues = [];
+
+      // Log the headers we found
+      issues.push({
+        type: 'info',
+        message: `Found headers: ${headers.join(', ')}`
+      });
+
+      // Compare with expected fields
+      const expectedFields = Object.keys(TABLE_FIELD_TYPES[dbTableName] || {});
+      issues.push({
+        type: 'info',
+        message: `Expected fields: ${expectedFields.join(', ')}`
+      });
+
+      // Check mappings
+      if (TABLE_COLUMN_MAPPING[dbTableName]) {
+        issues.push({
+          type: 'info',
+          message: `Current mappings: ${JSON.stringify(TABLE_COLUMN_MAPPING[dbTableName], null, 2)}`
+        });
+      }
+
+      // Sample some data
+      const rows = xlsx.utils.sheet_to_json(worksheet, { range: 1, header: headers }).slice(0, 3);
+      if (rows.length > 0) {
+        issues.push({
+          type: 'info',
+          message: `Sample data: ${JSON.stringify(rows[0], null, 2)}`
+        });
+      }
+
+      validation.sheets[tableName] = {
+        database_table: dbTableName,
+        issues
+      };
+
+      validation.summary.total_sheets++;
+      if (issues.length > 0) {
+        validation.summary.sheets_with_issues++;
+        validation.summary.total_issues += issues.length;
+      }
+    }
+
+    res.json(validation);
+  } catch (error) {
+    console.error('Validation error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -21,6 +21,7 @@ export function ImportPage() {
   const [progress, setProgress] = useState<ImportProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [importType, setImportType] = useState<'rawData' | 'outcomes'>('rawData');
+  const [validationResults, setValidationResults] = useState<any>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -63,6 +64,27 @@ export function ImportPage() {
       setProgress(response.data.progress);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during import');
+    } finally {
+      setIsUploading(false);
+    }
+  }, [importType, rawDataFile, outcomesFile]);
+
+  const handleValidate = useCallback(async () => {
+    const file = importType === 'rawData' ? rawDataFile : outcomesFile;
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+    setValidationResults(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('/api/import/validate', formData);
+      setValidationResults(response.data);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to validate file');
     } finally {
       setIsUploading(false);
     }
@@ -148,19 +170,43 @@ export function ImportPage() {
               </div>
             )}
 
-            <div className="mt-5">
-              <button
-                type="button"
-                onClick={handleUpload}
-                disabled={!(importType === 'rawData' ? rawDataFile : outcomesFile) || isUploading}
-                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white 
-                  ${!(importType === 'rawData' ? rawDataFile : outcomesFile) || isUploading
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                  }`}
-              >
-                {isUploading ? 'Uploading...' : 'Upload'}
-              </button>
+            <div className="mt-5 space-y-4">
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleUpload}
+                  disabled={isUploading || !(importType === 'rawData' ? rawDataFile : outcomesFile)}
+                  className={`bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50`}
+                >
+                  {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
+                <button
+                  onClick={handleValidate}
+                  disabled={isUploading || !(importType === 'rawData' ? rawDataFile : outcomesFile)}
+                  className={`bg-green-500 text-white px-4 py-2 rounded disabled:opacity-50`}
+                >
+                  Validate Mappings
+                </button>
+              </div>
+
+              {validationResults && (
+                <div className="mt-4 p-4 bg-gray-50 rounded">
+                  <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
+                  <div className="space-y-4">
+                    {Object.entries(validationResults.sheets).map(([sheetName, data]: [string, any]) => (
+                      <div key={sheetName} className="border p-4 rounded">
+                        <h4 className="font-medium">{sheetName} → {data.database_table}</h4>
+                        <ul className="list-disc pl-5 mt-2">
+                          {data.issues.map((issue: any, index: number) => (
+                            <li key={index} className={`text-sm ${issue.type === 'error' ? 'text-red-600' : 'text-gray-600'}`}>
+                              {issue.message}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {progress && (

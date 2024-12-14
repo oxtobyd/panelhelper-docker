@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import tasksRouter from './routes/tasks.js';
 import panelsRouter from './routes/panels.js';
@@ -10,8 +11,11 @@ import calendarRouter from './routes/calendar.js';
 import reportsRouter from './routes/reports.js';
 import importRouter from './routes/import.js';
 import venuesRouter from './routes/venues.js';
+import authRouter from './routes/auth.js';
+import usersRouter from './routes/users.js';
 
 import { pool } from './db.js';
+import { authenticateToken } from './middleware/auth.js';
 
 dotenv.config();
 
@@ -19,17 +23,23 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+
+// Public routes
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+
+// Protected routes
+app.use('/api/panels', authenticateToken, panelsRouter);
+app.use('/api/calendar', authenticateToken, calendarRouter);
+app.use('/api/reports', authenticateToken, reportsRouter);
+app.use('/api/import', authenticateToken, importRouter);
+app.use('/api/venues', authenticateToken, venuesRouter);
 
 app.use('/api/tasks', tasksRouter);
-app.use('/api/panels', panelsRouter);
 app.use('/api/candidates', candidatesRouter);
 app.use('/api/worship-schedule', worshipScheduleRouter);
 app.use('/api/analytics', analyticsRouter);
-app.use('/api/calendar', calendarRouter);
-app.use('/api/reports', reportsRouter);
-app.use('/api/import', importRouter);
-app.use('/api/venues', venuesRouter);
-console.log('Calendar routes registered');
 
 // Add a catch-all route for debugging
 app.use((req, res, next) => {
@@ -107,7 +117,7 @@ app.get('/api/panels/with-tasks', async (req, res) => {
 });
 
 // Get all panels with related information
-app.get('/api/panels', async (req, res) => {
+app.get('/api/panels', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -130,7 +140,7 @@ app.get('/api/panels', async (req, res) => {
 });
 
 // Get panel details including attendees
-app.get('/api/panels/:id', async (req, res) => {
+app.get('/api/panels/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -224,7 +234,7 @@ app.get('/api/panels/:id', async (req, res) => {
 });
 
 // Add this after the existing panel routes
-app.patch('/api/tasks/:id/toggle-complete', async (req, res) => {
+app.patch('/api/tasks/:id/toggle-complete', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     

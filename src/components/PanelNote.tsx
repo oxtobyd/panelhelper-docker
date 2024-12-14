@@ -9,7 +9,7 @@ interface PanelNoteProps {
 }
 
 export function PanelNote({ panelId }: PanelNoteProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState('');
   const queryClient = useQueryClient();

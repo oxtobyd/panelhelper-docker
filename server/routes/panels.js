@@ -133,7 +133,41 @@ router.get('/:panelId/candidates-grouped', async (req, res) => {
     const { panelId } = req.params;
     console.log('Fetching candidates with scores for panel:', panelId);
     
-    const result = await pool.query(`
+    // First get all advisers by team, joining with their MFA/PFA designation to get subject
+    const advisersByTeamResult = await pool.query(`
+      SELECT 
+        COALESCE(pa.attendee_team, 'unassigned') as attendee_team,
+        json_agg(json_build_object(
+          'id', a.id,
+          'name', a.forenames || ' ' || a.surname,
+          'subject_id', s.id,
+          'subject_name', s.name,
+          'level', CASE 
+            WHEN pa.mfa_or_pfa = 'M' AND pa.mp1_or_2 = '1' THEN 'MFA1'
+            WHEN pa.mfa_or_pfa = 'M' AND pa.mp1_or_2 = '2' THEN 'MFA2'
+            WHEN pa.mfa_or_pfa = 'P' AND pa.mp1_or_2 = '1' THEN 'PFA1'
+            WHEN pa.mfa_or_pfa = 'P' AND pa.mp1_or_2 = '2' THEN 'PFA2'
+          END
+        )) as advisers
+      FROM panel_attendees pa
+      JOIN advisers a ON pa.attendee_id = a.id
+      JOIN subjects s ON (
+        CASE 
+          WHEN pa.mfa_or_pfa = 'M' THEN s.designation LIKE 'MFA%'
+          WHEN pa.mfa_or_pfa = 'P' THEN s.designation LIKE 'PFA%'
+        END
+        AND
+        CASE 
+          WHEN pa.mp1_or_2 = '1' THEN s.designation LIKE '%1'
+          WHEN pa.mp1_or_2 = '2' THEN s.designation LIKE '%2'
+        END
+      )
+      WHERE pa.panel_id = $1 AND pa.attendee_type = 'A'
+      GROUP BY pa.attendee_team
+    `, [panelId]);
+
+    // Then get candidates with scores by team
+    const candidatesByTeamResult = await pool.query(`
       WITH candidate_scores AS (
         SELECT 
           acs.candidate_id,
@@ -147,7 +181,7 @@ router.get('/:panelId/candidates-grouped', async (req, res) => {
         GROUP BY acs.candidate_id, acs.adviser_id
       )
       SELECT 
-        pa.attendee_team as team,
+        COALESCE(pa.attendee_team, 'unassigned') as team,
         json_agg(json_build_object(
           'id', c.id,
           'name', c.forenames || ' ' || c.surname,
@@ -162,15 +196,33 @@ router.get('/:panelId/candidates-grouped', async (req, res) => {
       GROUP BY pa.attendee_team
       ORDER BY pa.attendee_team
     `, [panelId]);
+
+    console.log('Adviser teams:', advisersByTeamResult.rows.map(r => r.attendee_team));
+    console.log('Candidate teams:', candidatesByTeamResult.rows.map(r => r.team));
+
+    // Combine the results
+    const teamData = {};
+    advisersByTeamResult.rows.forEach(row => {
+      teamData[row.attendee_team || 'unassigned'] = {
+        advisers: row.advisers,
+        candidates: []
+      };
+    });
+
+    candidatesByTeamResult.rows.forEach(row => {
+      const team = row.team || 'unassigned';
+      if (!teamData[team]) {
+        teamData[team] = {
+          advisers: [],
+          candidates: []
+        };
+      }
+      teamData[team].candidates = row.candidates;
+    });
     
-    console.log('Candidates with scores:', JSON.stringify(result.rows, null, 2));
+    console.log('Final teams:', Object.keys(teamData));
     
-    const groupedByTeam = result.rows.reduce((acc, row) => {
-      acc[row.team] = row.candidates;
-      return acc;
-    }, {});
-    
-    res.json(groupedByTeam);
+    res.json(teamData);
   } catch (err) {
     console.error('Error fetching candidates:', err);
     res.status(500).json({ error: err.message });

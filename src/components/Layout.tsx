@@ -1,8 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { ClipboardList, LayoutGrid, Calendar, Settings, BarChart, Upload, BarChart2, Home, FileSpreadsheet } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ClipboardList, LayoutGrid, Calendar, Settings, BarChart, Upload, BarChart2, Home, FileSpreadsheet, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   const navItems = [
     {
       icon: <LayoutGrid className="w-6 h-6" />,
@@ -13,7 +22,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     {
       icon: <Calendar className="w-6 h-6" />,
       label: 'Panels',
-      href: '/',
+      href: '/panels',
       description: 'Manage panel and carousel sessions'
     },
     {
@@ -53,38 +62,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 alt="Panel Helper Logo" 
                 className="h-8 w-auto mr-3"
               />
-              <span className="text-xl font-semibold text-gray-900">
-                Panel Helper
-              </span>
+              <span className="ml-2 text-xl font-semibold text-gray-900">Panel Helper</span>
             </div>
             <div className="flex space-x-8">
               {navItems.map((item) => (
-                item.external ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600"
-                  >
-                    <div className="flex flex-col items-center">
-                      {item.icon}
-                      <span className="mt-1 text-sm">{item.label}</span>
-                    </div>
-                  </a>
-                ) : (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600"
-                  >
-                    <div className="flex flex-col items-center">
-                      {item.icon}
-                      <span className="mt-1 text-sm">{item.label}</span>
-                    </div>
-                  </Link>
-                )
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600"
+                >
+                  <div className="flex flex-col items-center">
+                    {item.icon}
+                    <span className="mt-1 text-sm">{item.label}</span>
+                  </div>
+                </Link>
               ))}
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-1 pt-1 text-gray-900 hover:text-blue-600"
+              >
+                <div className="flex flex-col items-center">
+                  <LogOut className="w-6 h-6" />
+                  <span className="mt-1 text-sm">Logout</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>

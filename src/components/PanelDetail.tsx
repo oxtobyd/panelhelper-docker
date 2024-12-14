@@ -7,7 +7,7 @@ import { AddTasksModal } from './AddTasksModal';
 import { CandidateRecordModal } from './CandidateRecordModal';
 import { PanelNote } from './PanelNote';
 import { PanelTasks } from './PanelTasks';
-//import { ScoringPanel } from './ScoringPanel';
+import { ScoringPanel } from './ScoringPanel';
 import { PanelDDOMeetings } from './PanelDDOMeetings';
 import { CopyWorshipScheduleModal } from './CopyWorshipScheduleModal';
 import { PrintingChecklistModal } from './PrintingChecklistModal';
@@ -1124,111 +1124,36 @@ export function PanelDetail() {
         panelType={panel.panel_type} 
       />
 
-      {/* Conditionally render Candidate Scoring section */}
+      {/* Scoring Section */}
       {panel.panel_type === 'Panel' && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div 
-            className="flex items-center justify-between cursor-pointer"
-            onClick={() => setIsScoringExpanded(!isScoringExpanded)}
-          >
-            <h2 className="text-xl font-bold">Candidate Scoring</h2>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              {isScoringExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {isScoringExpanded && (
-            <div className="mt-4 grid grid-cols-2 gap-8">
-              {['A', 'B'].map((team) => (
-                <div key={team}>
-                  <h3 className="text-lg font-semibold mb-4">Team {team}</h3>
-                  <div className="space-y-8">
-                    {attendees
-                      .filter((a: any) => a.attendee_type === 'C' && a.attendee_team === team)
-                      .map((candidate: any) => (
-                        <div key={candidate.id} className="bg-white rounded-lg">
-                          <h4 className="text-lg font-medium mb-3">{candidate.attendee_name}</h4>
-                          <table className="min-w-full">
-                            <thead>
-                              <tr>
-                                <th className="text-left text-gray-500 uppercase text-sm w-32">Subject</th>
-                                <th className="text-left text-gray-500 uppercase text-sm w-48">Adviser</th>
-                                <th className="text-left text-gray-500 uppercase text-sm">Score</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100">
-                              {Array.isArray(subjects) && 
-                                [...subjects]
-                                  .sort((a, b) => a.id - b.id)
-                                  .map((subject: any) => {
-                                    const matchingAdvisers = attendees.filter((adviser: any) => {
-                                      const adviserDesignation = getAdviserDesignation(adviser);
-                                      return (
-                                        adviser.attendee_type === 'A' &&
-                                        adviser.attendee_team === candidate.attendee_team &&
-                                        adviserDesignation === subject.designation
-                                      );
-                                    });
-
-                                    if (matchingAdvisers.length === 0) return null;
-
-                                    return matchingAdvisers.map((adviser: any) => {
-                                      const currentScore = getScore(
-                                        parseInt(adviser.attendee_id),
-                                        parseInt(candidate.attendee_id),
-                                        subject.id
-                                      );
-
-                                      return (
-                                        <tr key={`${subject.id}-${adviser.id}`} className="hover:bg-gray-50">
-                                          <td className="py-2">
-                                            <div className="font-medium text-sm text-gray-600">
-                                              {subject.name}
-                                            </div>
-                                          </td>
-                                          <td className="py-2">
-                                            <div className="text-sm text-gray-500">
-                                              {adviser.attendee_name}
-                                            </div>
-                                          </td>
-                                          <td className="py-2">
-                                            <div className="flex gap-1">
-                                              {[1, 2, 3, 4, 5, 6].map((score) => (
-                                                <button
-                                                  key={score}
-                                                  onClick={() => {
-                                                    scoreMutation.mutate({
-                                                      adviserId: adviser.attendee_id,
-                                                      candidateId: candidate.attendee_id,
-                                                      subjectId: subject.id,
-                                                      score,
-                                                    });
-                                                  }}
-                                                  className={`w-6 h-6 text-sm rounded border flex items-center justify-center
-                                                    hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500
-                                                    ${currentScore === score 
-                                                      ? 'bg-blue-100 border-blue-500 text-blue-800' 
-                                                      : ''
-                                                    }`}
-                                                >
-                                                  {score}
-                                                </button>
-                                              ))}
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      );
-                                    });
-                                  })}
-                            </tbody>
-                          </table>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              ))}
+        <div className="bg-white shadow sm:rounded-lg mb-6">
+          <div className="px-4 py-5 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                Candidate Scoring
+              </h3>
+              <button
+                onClick={() => setIsScoringExpanded(!isScoringExpanded)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                {isScoringExpanded ? (
+                  <ChevronUp className="h-5 w-5" />
+                ) : (
+                  <ChevronDown className="h-5 w-5" />
+                )}
+              </button>
             </div>
-          )}
+            
+            {isScoringExpanded && panelData && (
+              <ScoringPanel
+                panelId={id}
+                getScore={getScore}
+                onScoreChange={(adviserId, candidateId, subjectId, score) => {
+                  scoreMutation.mutate({ adviserId, candidateId, subjectId, score });
+                }}
+              />
+            )}
+          </div>
         </div>
       )}
 
