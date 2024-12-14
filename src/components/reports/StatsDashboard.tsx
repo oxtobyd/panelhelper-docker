@@ -231,7 +231,7 @@ export const StatsDashboard: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Venue Statistics</h3>
-                <p className="text-sm text-gray-500 mb-6">Detailed venue utilisation and capacity metrics</p>
+                <p className="text-sm text-gray-500 mb-6">Detailed venue utilisation and capacity metrics (Cancelled = 0 Candidates, though future Panels may become viable)</p>
                 <VenueStats season={selectedSeason} />
               </div>
               <div>

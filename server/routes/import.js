@@ -625,6 +625,12 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         try {
           await client.query('BEGIN');
 
+          // Clear panel_attendees table before importing new data
+          if (dbTableName === 'panel_attendees') {
+            await client.query('TRUNCATE TABLE panel_attendees');
+            console.log('Cleared panel_attendees table before import');
+          }
+
           let query;
           if (columns.includes('id')) {
             const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
