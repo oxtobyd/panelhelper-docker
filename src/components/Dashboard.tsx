@@ -292,20 +292,20 @@ export function Dashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-blue-600" />
-            Upcoming Panels
+            Upcoming Panels (from 9 days ago)
           </h2>
           <div className="space-y-4">
             {filteredPanels.filter(p => p.panel_type === 'Panel').map(panel => (
               <PanelCard key={panel.id} panel={panel} refetch={refetch} />
             ))}
           </div>
-        </div>
+        </div>  
 
         {/* Carousels Section */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <Calendar className="w-5 h-5 text-purple-600" />
-            Upcoming Carousels
+            Upcoming Carousels (from 9 days ago)
           </h2>
           <div className="space-y-4">
             {filteredPanels.filter(p => p.panel_type === 'Carousel').map(panel => (

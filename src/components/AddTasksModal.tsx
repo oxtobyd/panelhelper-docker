@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { CheckSquare, X } from 'lucide-react';
+import { CheckSquare } from 'lucide-react';
+import { Modal } from './common/Modal';
 
 interface TaskTemplate {
   id: number;
@@ -80,86 +81,84 @@ export function AddTasksModal({ panelId, panelType, onClose }: Props) {
     allTaskIds.every(id => selectedTasks.includes(id));
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[80vh] flex flex-col">
-        <div className="p-4 border-b">
-          <h2 className="text-lg font-semibold">Add Tasks from Template</h2>
-        </div>
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      title="Add Tasks from Template"
+    >
+      <div className="overflow-y-auto max-h-[60vh] p-4">
+        {/* Select All Checkbox */}
+        <label className="flex items-center mb-6 p-3 bg-gray-50 rounded">
+          <input
+            type="checkbox"
+            className="mr-2"
+            checked={areAllTasksSelected}
+            onChange={(e) => handleSelectAll(e.target.checked)}
+          />
+          <span className="font-medium">Select All Tasks</span>
+          <span className="ml-2 text-sm text-gray-600">
+            ({allTaskIds.length} tasks)
+          </span>
+        </label>
 
-        <div className="overflow-y-auto flex-1 p-4">
-          {/* Select All Checkbox */}
-          <label className="flex items-center mb-6 p-3 bg-gray-50 rounded">
-            <input
-              type="checkbox"
-              className="mr-2"
-              checked={areAllTasksSelected}
-              onChange={(e) => handleSelectAll(e.target.checked)}
-            />
-            <span className="font-medium">Select All Tasks</span>
-            <span className="ml-2 text-sm text-gray-600">
-              ({allTaskIds.length} tasks)
-            </span>
-          </label>
-
-          {templates?.map((category) => (
-            <div key={category.category_name} className="mb-6">
-              <label className="flex items-center mb-3">
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={isCategorySelected(category)}
-                  onChange={(e) => handleSelectCategory(category, e.target.checked)}
-                />
-                <h3 className="font-medium">{category.category_name}</h3>
-                <span className="ml-2 text-sm text-gray-600">
-                  ({category.tasks.length} tasks)
-                </span>
-              </label>
-              <div className="space-y-2 ml-6">
-                {category.tasks.map((task) => (
-                  <label
-                    key={task.id}
-                    className="flex items-start p-3 border rounded hover:bg-gray-50 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      className="mt-1 mr-3"
-                      checked={selectedTasks.includes(task.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedTasks([...selectedTasks, task.id]);
-                        } else {
-                          setSelectedTasks(selectedTasks.filter(id => id !== task.id));
-                        }
-                      }}
-                    />
-                    <div>
-                      <div className="font-medium">{task.title}</div>
-                      <div className="text-sm text-gray-600">{task.description}</div>
-                    </div>
-                  </label>
-                ))}
-              </div>
+        {templates?.map((category) => (
+          <div key={category.category_name} className="mb-6">
+            <label className="flex items-center mb-3">
+              <input
+                type="checkbox"
+                className="mr-2"
+                checked={isCategorySelected(category)}
+                onChange={(e) => handleSelectCategory(category, e.target.checked)}
+              />
+              <h3 className="font-medium">{category.category_name}</h3>
+              <span className="ml-2 text-sm text-gray-600">
+                ({category.tasks.length} tasks)
+              </span>
+            </label>
+            <div className="space-y-2 ml-6">
+              {category.tasks.map((task) => (
+                <label
+                  key={task.id}
+                  className="flex items-start p-3 border rounded hover:bg-gray-50 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1 mr-3"
+                    checked={selectedTasks.includes(task.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedTasks([...selectedTasks, task.id]);
+                      } else {
+                        setSelectedTasks(selectedTasks.filter(id => id !== task.id));
+                      }
+                    }}
+                  />
+                  <div>
+                    <div className="font-medium">{task.title}</div>
+                    <div className="text-sm text-gray-600">{task.description}</div>
+                  </div>
+                </label>
+              ))}
             </div>
-          ))}
-        </div>
-
-        <div className="p-4 border-t flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => addTasksMutation.mutate(selectedTasks)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            disabled={selectedTasks.length === 0}
-          >
-            Add {selectedTasks.length} Tasks
-          </button>
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
+
+      <div className="p-4 border-t flex justify-end gap-2">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 text-gray-600 hover:text-gray-800"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => addTasksMutation.mutate(selectedTasks)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          disabled={selectedTasks.length === 0}
+        >
+          Add {selectedTasks.length} Tasks
+        </button>
+      </div>
+    </Modal>
   );
-} 
+}

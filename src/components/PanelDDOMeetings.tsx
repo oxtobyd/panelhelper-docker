@@ -205,6 +205,20 @@ export function PanelDDOMeetings({ panelId }: { panelId: string }) {
     }
   });
 
+  // Sort meetings: scheduled first (by date), then unscheduled
+  const sortedMeetings = meetings?.slice().sort((a: any, b: any) => {
+    // If neither has a date, sort by status (completed > scheduled > pending > cancelled)
+    if (!a.ddo_meeting_date && !b.ddo_meeting_date) {
+      const statusOrder = { completed: 0, scheduled: 1, pending: 2, cancelled: 3 };
+      return statusOrder[a.ddo_meeting_status] - statusOrder[b.ddo_meeting_status];
+    }
+    // If only one has a date, it should come first
+    if (!a.ddo_meeting_date) return 1;
+    if (!b.ddo_meeting_date) return -1;
+    // If both have dates, sort by date
+    return new Date(a.ddo_meeting_date).getTime() - new Date(b.ddo_meeting_date).getTime();
+  });
+
   const { data: panelInfo } = useQuery({
     queryKey: ['panel-info', panelId],
     queryFn: async () => {
@@ -301,7 +315,7 @@ export function PanelDDOMeetings({ panelId }: { panelId: string }) {
       
       {isExpanded && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {meetings?.map((meeting: any) => (
+          {sortedMeetings?.map((meeting: any) => (
             <div 
               key={meeting.candidate_id}
               className="flex flex-col justify-between p-4 border rounded-lg hover:bg-gray-50"

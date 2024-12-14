@@ -1030,6 +1030,79 @@ router.post('/validate', upload.single('file'), async (req, res) => {
   }
 });
 
+// Test validation endpoint for outcomes data that doesn't affect the main import
+router.post('/validate-outcomes', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Validate file structure
+    const workbook = validateExcelFile(req.file.path);
+    const worksheet = workbook.Sheets['Report'];
+    if (!worksheet) {
+      throw new Error('Excel file must contain a "Report" sheet');
+    }
+
+    // Convert to JSON
+    const jsonData = xlsx.utils.sheet_to_json(worksheet);
+    if (jsonData.length === 0) {
+      throw new Error('No data found in the Report sheet');
+    }
+
+    // Validate each row against the schema
+    const validationResults = {
+      isValid: true,
+      totalRows: jsonData.length,
+      validRows: 0,
+      errors: []
+    };
+
+    for (let i = 0; i < jsonData.length; i++) {
+      try {
+        const row = jsonData[i];
+        PanelOutcomeSchema.parse(row);
+        validationResults.validRows++;
+      } catch (error) {
+        validationResults.isValid = false;
+        validationResults.errors.push({
+          row: i + 2, // Add 2 to account for 1-based indexing and header row
+          errors: error.errors.map(e => ({
+            path: e.path.join('.'),
+            message: e.message
+          }))
+        });
+      }
+    }
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path);
+
+    // Record validation attempt
+    await recordImport('outcomeValidation', validationResults.isValid, {
+      fileName: req.file.originalname,
+      totalRows: validationResults.totalRows,
+      validRows: validationResults.validRows,
+      errorCount: validationResults.errors.length
+    });
+
+    return res.json(validationResults);
+  } catch (error) {
+    // Clean up uploaded file if it exists
+    if (req.file) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    // Record failed validation
+    await recordImport('outcomeValidation', false, {
+      fileName: req.file?.originalname,
+      error: error.message
+    });
+
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 // POST endpoint to handle panel outcomes import
 router.post('/outcomes', upload.single('file'), async (req, res) => {
   if (!req.file) {

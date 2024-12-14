@@ -669,6 +669,12 @@ export function PanelDetail() {
     return `${prefix}${adviser.mp1_or_2}`;
   };
 
+  const getDesignationColors = (designation: string): string => {
+    return designation.startsWith('MFA') 
+      ? 'bg-purple-100 text-purple-800' 
+      : 'bg-green-100 text-green-800';
+  };
+
   if (selectedCandidate) {
     return (
       <CandidateRecordModal
@@ -934,7 +940,7 @@ export function PanelDetail() {
                       <>
                         <button
                           onClick={() => setShowAdviserEmailMenu(!showAdviserEmailMenu)}
-                          className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 px-3 py-1 border rounded-md"
+                          className="text-sm text-green-600 hover:text-green-800 flex items-center gap-1 px-3 py-1 border rounded-md"
                         >
                           <Mail className="w-4 h-4" />
                           Send Email
@@ -1004,7 +1010,7 @@ export function PanelDetail() {
                             secretary
                           );
                         }}
-                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 px-3 py-1 border rounded-md"
+                        className="text-sm text-green-600 hover:text-green-800 flex items-center gap-1 px-3 py-1 border rounded-md"
                       >
                         <Mail className="w-4 h-4" />
                         Send Email
@@ -1022,7 +1028,7 @@ export function PanelDetail() {
                         .join(', ');
                       navigator.clipboard.writeText(emails);
                     }}
-                    className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1 px-3 py-1 border rounded-md"
+                    className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 px-3 py-1 border rounded-md"
                   >
                     <Mail className="w-4 h-4" />
                     Copy Emails
@@ -1040,7 +1046,7 @@ export function PanelDetail() {
                             <div className="flex items-center gap-2">
                               <span>{attendee.attendee_name}</span>
                               {getAdviserDesignation(attendee) && (
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDesignationColors(getAdviserDesignation(attendee))}`}>
                                   {getAdviserDesignation(attendee)}
                                 </span>
                               )}

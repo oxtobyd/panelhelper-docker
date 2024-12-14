@@ -81,7 +81,8 @@ export function ImportPage() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('/api/import/validate', formData);
+      const endpoint = importType === 'rawData' ? '/api/import/validate' : '/api/import/validate-outcomes';
+      const response = await axios.post(endpoint, formData);
       setValidationResults(response.data);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to validate file');
@@ -191,20 +192,47 @@ export function ImportPage() {
               {validationResults && (
                 <div className="mt-4 p-4 bg-gray-50 rounded">
                   <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
-                  <div className="space-y-4">
-                    {Object.entries(validationResults.sheets).map(([sheetName, data]: [string, any]) => (
-                      <div key={sheetName} className="border p-4 rounded">
-                        <h4 className="font-medium">{sheetName} → {data.database_table}</h4>
-                        <ul className="list-disc pl-5 mt-2">
-                          {data.issues.map((issue: any, index: number) => (
-                            <li key={index} className={`text-sm ${issue.type === 'error' ? 'text-red-600' : 'text-gray-600'}`}>
-                              {issue.message}
-                            </li>
-                          ))}
-                        </ul>
+                  {importType === 'rawData' ? (
+                    // Raw data validation results
+                    <div className="space-y-4">
+                      {Object.entries(validationResults.sheets || {}).map(([sheetName, data]: [string, any]) => (
+                        <div key={sheetName} className="border p-4 rounded">
+                          <h4 className="font-medium">{sheetName} → {data.database_table}</h4>
+                          <ul className="list-disc pl-5 mt-2">
+                            {data.issues.map((issue: any, index: number) => (
+                              <li key={index} className={`text-sm ${issue.type === 'error' ? 'text-red-600' : 'text-gray-600'}`}>
+                                {issue.message}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Outcomes validation results
+                    <div className="space-y-4">
+                      <div className="mb-4">
+                        <p className="text-sm">
+                          Total Rows: {validationResults.totalRows}
+                        </p>
+                        <p className="text-sm">
+                          Valid Rows: {validationResults.validRows}
+                        </p>
+                        {validationResults.errors?.length > 0 && (
+                          <div className="mt-4">
+                            <h4 className="font-medium mb-2">Validation Errors:</h4>
+                            <ul className="list-disc pl-5">
+                              {validationResults.errors.map((error: any, index: number) => (
+                                <li key={index} className="text-sm text-red-600">
+                                  Row {error.row}: {error.errors.map((e: any) => `${e.path} - ${e.message}`).join(', ')}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

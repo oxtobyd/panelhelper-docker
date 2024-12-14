@@ -47,6 +47,18 @@ const levelOrder = {
   'PFA2': 4
 };
 
+// Helper function to convert level format
+const getShortLevel = (level: 'MFA1' | 'MFA2' | 'PFA1' | 'PFA2'): string => {
+  return level.replace('MFA', 'M').replace('PFA', 'P').replace('A', '');
+};
+
+// Helper function to get badge colors based on level
+const getBadgeColors = (level: 'MFA1' | 'MFA2' | 'PFA1' | 'PFA2'): string => {
+  return level.startsWith('MFA') 
+    ? 'bg-purple-100 text-purple-800' 
+    : 'bg-green-100 text-green-800';
+};
+
 export function ScoringPanel({ panelId, getScore, onScoreChange, currentUserId }: ScoringPanelProps) {
   // Fetch candidates and advisers grouped by team
   const { data: teamData, isLoading } = useQuery<TeamGroupedData>({
@@ -106,7 +118,12 @@ export function ScoringPanel({ panelId, getScore, onScoreChange, currentUserId }
                     </th>
                     {filteredAdvisers.map((adviser) => (
                       <th key={adviser.id} scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <div>{adviser.name} ({adviser.level})</div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px]">{adviser.name}</span>
+                          <span className={`rounded-full ${getBadgeColors(adviser.level)} text-[10px] px-1.5 py-0 leading-[14px] normal-case font-medium`}>
+                            {getShortLevel(adviser.level)}
+                          </span>
+                        </div>
                         <div className="text-xs text-gray-400 normal-case">{adviser.subject_name}</div>
                       </th>
                     ))}
