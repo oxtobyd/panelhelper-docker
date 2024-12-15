@@ -80,7 +80,7 @@ export const DioceseCandidateStats: React.FC<DioceseCandidateStatsProps> = ({ di
                                                 </span>
                                             </td>
                                             <td className="px-3 py-3 text-sm text-center font-medium">
-                                                {stats.total_count || '—'}
+                                                {Number(stats.panel_count || 0) + Number(stats.carousel_count || 0) || '—'}
                                             </td>
                                             <td className="px-3 py-3 text-sm text-center">
                                                 {stats.total_change ? (

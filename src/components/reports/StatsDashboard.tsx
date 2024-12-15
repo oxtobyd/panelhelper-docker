@@ -152,7 +152,7 @@ export const StatsDashboard: React.FC = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold">Statistics Dashboard</h2>
-            <p className="mt-2 text-indigo-100">Track and analse panel performance metrics</p>
+            <p className="mt-2 text-indigo-100">Track and analyse panel performance metrics</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-2">
             <SeasonSelector
@@ -283,7 +283,6 @@ export const StatsDashboard: React.FC = () => {
                 onDioceseDataLoad={setDioceseStats} 
               />
               <ProgressionStats />
-              <DioceseCandidateStats dioceseStats={dioceseStats} />
             </div>
           )}
 
@@ -342,6 +341,7 @@ export const StatsDashboard: React.FC = () => {
                 })}
                 season={selectedSeason}
               />
+              <DioceseCandidateStats dioceseStats={dioceseStats} />
             </div>
           )}
         </div>
