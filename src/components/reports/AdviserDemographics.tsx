@@ -18,20 +18,21 @@ const genderLabels: Record<string, string> = {
 };
 
 const genderColors: Record<string, { bg: string; text: string }> = {
-  'M': { bg: 'bg-blue-100', text: 'text-blue-700' },
-  'F': { bg: 'bg-purple-100', text: 'text-purple-700' },
-  'O': { bg: 'bg-green-100', text: 'text-green-700' },
-  'P': { bg: 'bg-gray-100', text: 'text-gray-700' },
-  'Not Specified': { bg: 'bg-yellow-50', text: 'text-yellow-600' }
+  'M': { bg: 'bg-blue-500', text: 'text-blue-600' },
+  'F': { bg: 'bg-pink-500', text: 'text-pink-600' },
+  'O': { bg: 'bg-purple-500', text: 'text-purple-600' },
+  'P': { bg: 'bg-yellow-500', text: 'text-yellow-600' },
+  'Not Specified': { bg: 'bg-gray-400', text: 'text-gray-600' }
 };
 
 const ageColors: Record<string, { bg: string; text: string }> = {
-  'Under 35': { bg: 'bg-blue-50', text: 'text-blue-600' },
-  '35-44': { bg: 'bg-blue-100', text: 'text-blue-700' },
-  '45-54': { bg: 'bg-blue-200', text: 'text-blue-800' },
-  '55-64': { bg: 'bg-blue-300', text: 'text-blue-900' },
-  '65 and over': { bg: 'bg-blue-400', text: 'text-blue-950' },
-  'Not Specified': { bg: 'bg-yellow-50', text: 'text-yellow-600' }
+  'Under 25': { bg: 'bg-red-500', text: 'text-red-600' },
+  '25-34': { bg: 'bg-orange-500', text: 'text-orange-600' },
+  '35-44': { bg: 'bg-yellow-500', text: 'text-yellow-600' },
+  '45-54': { bg: 'bg-green-500', text: 'text-green-600' },
+  '55-64': { bg: 'bg-blue-500', text: 'text-blue-600' },
+  '65 and over': { bg: 'bg-indigo-500', text: 'text-indigo-600' },
+  'Not Specified': { bg: 'bg-gray-400', text: 'text-gray-600' }
 };
 
 export const AdviserDemographics = ({ season }: AdviserDemographicsProps) => {
@@ -45,6 +46,7 @@ export const AdviserDemographics = ({ season }: AdviserDemographicsProps) => {
           : '/api/reports/adviser-demographics';
         const response = await fetch(url);
         const result = await response.json();
+        console.log('Adviser Age Data:', result.age_ranges);
         setData(result);
       } catch (error) {
         console.error('Error fetching adviser demographics:', error);

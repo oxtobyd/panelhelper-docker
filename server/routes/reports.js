@@ -184,7 +184,8 @@ router.get('/candidate-stats', async (req, res) => {
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 25 AND 34 THEN '25-34'
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 35 AND 44 THEN '35-44'
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 45 AND 54 THEN '45-54'
-                        ELSE '55 and over'
+                        WHEN date_part('year', age(date_of_birth)) BETWEEN 55 AND 64 THEN '55-64'
+                        ELSE '65 and over'
                     END as range,
                     COUNT(*) as count
                 FROM active_candidates
@@ -193,7 +194,7 @@ router.get('/candidate-stats', async (req, res) => {
                     CASE WHEN date_of_birth IS NULL THEN 1 ELSE 0 END,
                     date_of_birth
             )
-            SELECT range, SUM(count) as count
+            SELECT range, CAST(SUM(count) AS INTEGER) as count
             FROM age_ranges
             GROUP BY range
             ORDER BY 
@@ -202,8 +203,9 @@ router.get('/candidate-stats', async (req, res) => {
                     WHEN '25-34' THEN 2
                     WHEN '35-44' THEN 3
                     WHEN '45-54' THEN 4
-                    WHEN '55 and over' THEN 5
-                    ELSE 6
+                    WHEN '55-64' THEN 5
+                    WHEN '65 and over' THEN 6
+                    ELSE 7
                 END`;
 
         const dioceseQuery = `
@@ -522,7 +524,8 @@ router.get('/adviser-demographics', async (req, res) => {
                 SELECT 
                     CASE 
                         WHEN date_of_birth IS NULL THEN 'Not Specified'
-                        WHEN date_part('year', age(date_of_birth)) < 35 THEN 'Under 35'
+                        WHEN date_part('year', age(date_of_birth)) < 25 THEN 'Under 25'
+                        WHEN date_part('year', age(date_of_birth)) BETWEEN 25 AND 34 THEN '25-34'
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 35 AND 44 THEN '35-44'
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 45 AND 54 THEN '45-54'
                         WHEN date_part('year', age(date_of_birth)) BETWEEN 55 AND 64 THEN '55-64'
@@ -536,17 +539,18 @@ router.get('/adviser-demographics', async (req, res) => {
                     date_of_birth
             ),
             age_ranges_grouped AS (
-                SELECT range, SUM(count) as count
+                SELECT range, CAST(SUM(count) AS INTEGER) as count
                 FROM age_ranges
                 GROUP BY range
                 ORDER BY 
                     CASE range
-                        WHEN 'Under 35' THEN 1
-                        WHEN '35-44' THEN 2
-                        WHEN '45-54' THEN 3
-                        WHEN '55-64' THEN 4
-                        WHEN '65 and over' THEN 5
-                        ELSE 6
+                        WHEN 'Under 25' THEN 1
+                        WHEN '25-34' THEN 2
+                        WHEN '35-44' THEN 3
+                        WHEN '45-54' THEN 4
+                        WHEN '55-64' THEN 5
+                        WHEN '65 and over' THEN 6
+                        ELSE 7
                     END
             ),
             gender_stats AS (
