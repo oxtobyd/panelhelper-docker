@@ -1,0 +1,704 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of London",
+        "id": "london"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.5103, 51.6717],
+          [-0.1632, 51.6916],
+          [0.0549, 51.6387],
+          [0.0275, 51.4878],
+          [-0.3296, 51.4845],
+          [-0.5103, 51.6717]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Oxford",
+        "id": "oxford"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.5849, 51.7520],
+          [-1.2577, 51.7519],
+          [-1.2577, 51.5219],
+          [-1.5849, 51.5219],
+          [-1.5849, 51.7520]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Canterbury",
+        "id": "canterbury"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [1.3348, 51.3645],
+          [1.4492, 51.3573],
+          [1.3495, 51.1445],
+          [0.9623, 51.0812],
+          [0.8453, 51.2845],
+          [1.3348, 51.3645]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of York",
+        "id": "york"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.2844, 54.0123],
+          [-0.9876, 54.0234],
+          [-0.8765, 53.8765],
+          [-1.3456, 53.8901],
+          [-1.2844, 54.0123]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Winchester",
+        "id": "winchester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.5234, 51.2345],
+          [-1.2345, 51.2456],
+          [-1.2123, 50.9876],
+          [-1.5432, 50.9765],
+          [-1.5234, 51.2345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Durham",
+        "id": "durham"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.8765, 54.8765],
+          [-1.5678, 54.8901],
+          [-1.5432, 54.6789],
+          [-1.8901, 54.6543],
+          [-1.8765, 54.8765]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Bath and Wells",
+        "id": "bath-and-wells"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.5901, 51.3456],
+          [-2.3456, 51.3567],
+          [-2.3234, 51.1234],
+          [-2.5789, 51.1123],
+          [-2.5901, 51.3456]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Birmingham",
+        "id": "birmingham"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.9876, 52.5678],
+          [-1.7654, 52.5789],
+          [-1.7543, 52.4321],
+          [-1.9765, 52.4210],
+          [-1.9876, 52.5678]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Blackburn",
+        "id": "blackburn"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.6543, 53.8901],
+          [-2.4321, 53.9012],
+          [-2.4210, 53.7654],
+          [-2.6432, 53.7543],
+          [-2.6543, 53.8901]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Bristol",
+        "id": "bristol"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.7123, 51.5432],
+          [-2.5432, 51.5543],
+          [-2.5321, 51.4321],
+          [-2.7012, 51.4210],
+          [-2.7123, 51.5432]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Carlisle",
+        "id": "carlisle"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-3.2345, 54.8901],
+          [-2.9876, 54.9012],
+          [-2.9765, 54.7654],
+          [-3.2234, 54.7543],
+          [-3.2345, 54.8901]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Chelmsford",
+        "id": "chelmsford"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [0.4789, 51.7345],
+          [0.7123, 51.7456],
+          [0.7234, 51.5678],
+          [0.4678, 51.5567],
+          [0.4789, 51.7345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Chester",
+        "id": "chester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.9012, 53.2345],
+          [-2.6789, 53.2456],
+          [-2.6678, 53.0678],
+          [-2.8901, 53.0567],
+          [-2.9012, 53.2345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Chichester",
+        "id": "chichester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.7890, 50.8456],
+          [-0.5678, 50.8567],
+          [-0.5567, 50.6789],
+          [-0.7789, 50.6678],
+          [-0.7890, 50.8456]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Coventry",
+        "id": "coventry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.5678, 52.4567],
+          [-1.3456, 52.4678],
+          [-1.3345, 52.2890],
+          [-1.5567, 52.2789],
+          [-1.5678, 52.4567]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Derby",
+        "id": "derby"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.4890, 53.0123],
+          [-1.2678, 53.0234],
+          [-1.2567, 52.8456],
+          [-1.4789, 52.8345],
+          [-1.4890, 53.0123]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Ely",
+        "id": "ely"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [0.1234, 52.3456],
+          [0.3456, 52.3567],
+          [0.3567, 52.1789],
+          [0.1123, 52.1678],
+          [0.1234, 52.3456]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Exeter",
+        "id": "exeter"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-3.5432, 50.7345],
+          [-3.3210, 50.7456],
+          [-3.3099, 50.5678],
+          [-3.5321, 50.5567],
+          [-3.5432, 50.7345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Gloucester",
+        "id": "gloucester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.2345, 51.8901],
+          [-2.0123, 51.9012],
+          [-2.0012, 51.7654],
+          [-2.2234, 51.7543],
+          [-2.2345, 51.8901]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Guildford",
+        "id": "guildford"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.5789, 51.3456],
+          [-0.3567, 51.3567],
+          [-0.3456, 51.1789],
+          [-0.5678, 51.1678],
+          [-0.5789, 51.3456]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Hereford",
+        "id": "hereford"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.7654, 52.0567],
+          [-2.5432, 52.0678],
+          [-2.5321, 51.8901],
+          [-2.7543, 51.8790],
+          [-2.7654, 52.0567]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Leeds",
+        "id": "leeds"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.7890, 53.8456],
+          [-1.5678, 53.8567],
+          [-1.5567, 53.6789],
+          [-1.7789, 53.6678],
+          [-1.7890, 53.8456]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Leicester",
+        "id": "leicester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.1543, 52.6789],
+          [-0.9321, 52.6890],
+          [-0.9210, 52.5123],
+          [-1.1432, 52.5012],
+          [-1.1543, 52.6789]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Lichfield",
+        "id": "lichfield"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.1234, 52.7890],
+          [-1.9012, 52.8001],
+          [-1.8901, 52.6234],
+          [-2.1123, 52.6123],
+          [-2.1234, 52.7890]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Lincoln",
+        "id": "lincoln"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.5432, 53.2345],
+          [-0.3210, 53.2456],
+          [-0.3099, 53.0678],
+          [-0.5321, 53.0567],
+          [-0.5432, 53.2345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Liverpool",
+        "id": "liverpool"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-3.0123, 53.4567],
+          [-2.7901, 53.4678],
+          [-2.7790, 53.2901],
+          [-3.0012, 53.2790],
+          [-3.0123, 53.4567]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Manchester",
+        "id": "manchester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.2456, 53.5678],
+          [-2.0234, 53.5789],
+          [-2.0123, 53.4012],
+          [-2.2345, 53.3901],
+          [-2.2456, 53.5678]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Newcastle",
+        "id": "newcastle"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.6789, 55.0123],
+          [-1.4567, 55.0234],
+          [-1.4456, 54.8456],
+          [-1.6678, 54.8345],
+          [-1.6789, 55.0123]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Norwich",
+        "id": "norwich"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [1.2901, 52.6789],
+          [1.5123, 52.6890],
+          [1.5234, 52.5123],
+          [1.2790, 52.5012],
+          [1.2901, 52.6789]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Peterborough",
+        "id": "peterborough"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.2456, 52.5789],
+          [-0.0234, 52.5890],
+          [-0.0123, 52.4123],
+          [-0.2345, 52.4012],
+          [-0.2456, 52.5789]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Portsmouth",
+        "id": "portsmouth"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.0901, 50.8123],
+          [-0.8679, 50.8234],
+          [-0.8568, 50.6456],
+          [-1.0790, 50.6345],
+          [-1.0901, 50.8123]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Rochester",
+        "id": "rochester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [0.5012, 51.3890],
+          [0.7234, 51.4001],
+          [0.7345, 51.2234],
+          [0.4901, 51.2123],
+          [0.5012, 51.3890]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of St Albans",
+        "id": "st-albans"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.3456, 52.0123],
+          [-0.1234, 52.0234],
+          [-0.1123, 51.8456],
+          [-0.3345, 51.8345],
+          [-0.3456, 52.0123]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of St Edmundsbury and Ipswich",
+        "id": "st-edmundsbury-and-ipswich"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [1.1567, 52.2890],
+          [1.3789, 52.3001],
+          [1.3890, 52.1234],
+          [1.1456, 52.1123],
+          [1.1567, 52.2890]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Salisbury",
+        "id": "salisbury"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.7901, 51.0678],
+          [-1.5679, 51.0789],
+          [-1.5568, 50.9012],
+          [-1.7790, 50.8901],
+          [-1.7901, 51.0678]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Sheffield",
+        "id": "sheffield"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.4789, 53.4012],
+          [-1.2567, 53.4123],
+          [-1.2456, 53.2345],
+          [-1.4678, 53.2234],
+          [-1.4789, 53.4012]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Sodor and Man",
+        "id": "sodor-and-man"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-4.4901, 54.2345],
+          [-4.2679, 54.2456],
+          [-4.2568, 54.0678],
+          [-4.4790, 54.0567],
+          [-4.4901, 54.2345]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Southwark",
+        "id": "southwark"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.0901, 51.4567],
+          [0.1321, 51.4678],
+          [0.1432, 51.2901],
+          [-0.0790, 51.2790],
+          [-0.0901, 51.4567]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Southwell and Nottingham",
+        "id": "southwell-and-nottingham"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.9901, 53.1234],
+          [-0.7679, 53.1345],
+          [-0.7568, 52.9567],
+          [-0.9790, 52.9456],
+          [-0.9901, 53.1234]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Truro",
+        "id": "truro"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-4.7901, 50.4567],
+          [-4.5679, 50.4678],
+          [-4.5568, 50.2901],
+          [-4.7790, 50.2790],
+          [-4.7901, 50.4567]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Worcester",
+        "id": "worcester"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-2.2901, 52.3456],
+          [-2.0679, 52.3567],
+          [-2.0568, 52.1789],
+          [-2.2790, 52.1678],
+          [-2.2901, 52.3456]
+        ]]
+      }
+    }
+  ]
+}

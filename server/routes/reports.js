@@ -110,6 +110,7 @@ router.get('/stats', async (req, res) => {
             FROM progression_stats ps`;
 
         const stats = await pool.query(query, season ? [season] : []);
+        console.log('Stats response:', JSON.stringify(stats.rows[0], null, 2));
         res.json(stats.rows[0]);
     } catch (error) {
         console.error('Error fetching overall stats:', error);
@@ -221,7 +222,9 @@ router.get('/candidate-stats', async (req, res) => {
                 JOIN diocese d ON c.diocese = d.id
                 WHERE pa.attendee_type = 'C'
                 ${season ? 'AND p.calculated_season = $1' : ''}
-                GROUP BY d.diocese_name, p.calculated_season, p.panel_type
+                GROUP BY d.diocese_name,
+                    p.calculated_season, 
+                    p.panel_type
             ),
             prev_season_stats AS (
                 SELECT 
@@ -256,13 +259,13 @@ router.get('/candidate-stats', async (req, res) => {
                 season,
                 COALESCE(panel_count, 0) as panel_count,
                 COALESCE(carousel_count, 0) as carousel_count,
-                COALESCE(panel_count, 0) + COALESCE(carousel_count, 0) as total_count,
+                COALESCE(panel_count, 0) + COALESCE(carousel_count, 0) as total_candidates,
                 COALESCE(panel_count, 0) - COALESCE(prev_panel_count, 0) as panel_change,
                 COALESCE(carousel_count, 0) - COALESCE(prev_carousel_count, 0) as carousel_change,
                 (COALESCE(panel_count, 0) + COALESCE(carousel_count, 0)) - 
                 (COALESCE(prev_panel_count, 0) + COALESCE(prev_carousel_count, 0)) as total_change
             FROM current_with_prev
-            ORDER BY season DESC, total_count DESC`;
+            ORDER BY season DESC, total_candidates DESC`;
 
         const [ageStats, dioceseStats] = await Promise.all([
             pool.query(ageQuery, season ? [season] : []),
@@ -329,56 +332,56 @@ router.get('/panel-outcomes', async (req, res) => {
 
 // Get panel outcome statistics
 router.get('/outcome-stats', async (req, res) => {
-  try {
     const { season } = req.query;
-    let seasonFilter = '';
-    if (season) {
-      seasonFilter = 'WHERE calculated_season = $1';
+    try {
+        let seasonFilter = '';
+        if (season) {
+            seasonFilter = 'WHERE calculated_season = $1';
+        }
+
+        const query = `
+            WITH normalized_outcomes AS (
+                SELECT 
+                    CASE 
+                        WHEN panel_result_text ILIKE '%recommended with suggested preparation%' 
+                          OR panel_result_text ILIKE '%recommendedwithsuggestedpreparation%' 
+                          THEN 'Recommended with Preparation'
+                        WHEN panel_result_text ILIKE '%conditionally recommended%' 
+                          OR panel_result_text ILIKE '%conditionallyrecommended%' 
+                          THEN 'Conditionally Recommended'
+                        WHEN panel_result_text ILIKE '%not yet ready%' 
+                          OR panel_result_text ILIKE '%notyetreadytoproceed%' 
+                          THEN 'Not Yet Ready'
+                        WHEN panel_result_text ILIKE '%advice not to proceed%' 
+                          OR panel_result_text ILIKE '%advicenottoproceed%' 
+                          THEN 'Advice Not to Proceed'
+                        WHEN panel_result_text ILIKE '%recommended%' 
+                          THEN 'Recommended'
+                        ELSE panel_result_text 
+                    END as outcome,
+                    (love_for_god + call_to_ministry + love_for_people + wisdom + fruitfulness + potential) / 6.0 as avg_score
+                FROM panel_outcomes
+                ${seasonFilter}
+                WHERE panel_result_text IS NOT NULL
+            )
+            SELECT 
+                outcome,
+                COUNT(*) as count,
+                ROUND(AVG(avg_score), 2) as average_score,
+                ROUND(MIN(avg_score), 2) as min_score,
+                ROUND(MAX(avg_score), 2) as max_score
+            FROM normalized_outcomes
+            GROUP BY outcome
+            ORDER BY average_score DESC;
+        `;
+
+        const params = season ? [season] : [];
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching outcome statistics:', error);
+        res.status(500).json({ error: 'Failed to fetch outcome statistics' });
     }
-
-    const query = `
-      WITH normalized_outcomes AS (
-        SELECT 
-          CASE 
-            WHEN panel_result_text ILIKE '%recommended with suggested preparation%' 
-              OR panel_result_text ILIKE '%recommendedwithsuggestedpreparation%' 
-              THEN 'Recommended with Preparation'
-            WHEN panel_result_text ILIKE '%conditionally recommended%' 
-              OR panel_result_text ILIKE '%conditionallyrecommended%' 
-              THEN 'Conditionally Recommended'
-            WHEN panel_result_text ILIKE '%not yet ready%' 
-              OR panel_result_text ILIKE '%notyetreadytoproceed%' 
-              THEN 'Not Yet Ready'
-            WHEN panel_result_text ILIKE '%advice not to proceed%' 
-              OR panel_result_text ILIKE '%advicenottoproceed%' 
-              THEN 'Advice Not to Proceed'
-            WHEN panel_result_text ILIKE '%recommended%' 
-              THEN 'Recommended'
-            ELSE panel_result_text 
-          END as outcome,
-          (love_for_god + call_to_ministry + love_for_people + wisdom + fruitfulness + potential) / 6.0 as avg_score
-        FROM panel_outcomes
-        ${seasonFilter}
-        WHERE panel_result_text IS NOT NULL
-      )
-      SELECT 
-        outcome,
-        COUNT(*) as count,
-        ROUND(AVG(avg_score), 2) as average_score,
-        ROUND(MIN(avg_score), 2) as min_score,
-        ROUND(MAX(avg_score), 2) as max_score
-      FROM normalized_outcomes
-      GROUP BY outcome
-      ORDER BY average_score DESC;
-    `;
-
-    const params = season ? [season] : [];
-    const result = await pool.query(query, params);
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching outcome stats:', error);
-    res.status(500).json({ error: 'Failed to fetch outcome statistics' });
-  }
 });
 
 // Get venue statistics
@@ -1156,6 +1159,42 @@ router.get('/progression-times', async (req, res) => {
     } catch (error) {
         console.error('Error fetching progression times:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get diocese boundaries
+router.get('/diocese-boundaries', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                diocese_name,
+                diocese_id,
+                boundary_coordinates
+            FROM diocese_boundaries
+            ORDER BY diocese_name
+        `;
+        
+        const result = await pool.query(query);
+        console.log('Diocese boundaries response:', JSON.stringify(result.rows, null, 2));
+        
+        const geoJson = {
+            type: "FeatureCollection",
+            features: result.rows.map(row => ({
+                type: "Feature",
+                properties: {
+                    // Remove "Diocese of" prefix if present to match the format in dioceseStats
+                    name: row.diocese_name.replace(/^Diocese of /, ''),
+                    id: row.diocese_id
+                },
+                geometry: row.boundary_coordinates
+            }))
+        };
+        
+        console.log('GeoJSON response:', JSON.stringify(geoJson, null, 2));
+        res.json(geoJson);
+    } catch (error) {
+        console.error('Error fetching diocese boundaries:', error);
+        res.status(500).json({ error: 'Failed to fetch diocese boundaries' });
     }
 });
 

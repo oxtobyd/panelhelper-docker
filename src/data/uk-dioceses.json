@@ -1,0 +1,107 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London - Two Cities",
+        "id": "london_two_cities"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.15, 51.50],
+          [-0.15, 51.52],
+          [-0.08, 51.52],
+          [-0.08, 51.50],
+          [-0.15, 51.50]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London - Stepney",
+        "id": "london_stepney"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.08, 51.50],
+          [-0.08, 51.54],
+          [0.00, 51.54],
+          [0.00, 51.50],
+          [-0.08, 51.50]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London - Edmonton",
+        "id": "london_edmonton"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.15, 51.52],
+          [-0.15, 51.56],
+          [-0.08, 51.56],
+          [-0.08, 51.52],
+          [-0.15, 51.52]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London - Willesden",
+        "id": "london_willesden"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.22, 51.52],
+          [-0.22, 51.56],
+          [-0.15, 51.56],
+          [-0.15, 51.52],
+          [-0.22, 51.52]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "London - Kensington",
+        "id": "london_kensington"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-0.22, 51.48],
+          [-0.22, 51.52],
+          [-0.15, 51.52],
+          [-0.15, 51.48],
+          [-0.22, 51.48]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Diocese of Oxford",
+        "id": "oxford"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.6, 51.3],
+          [-1.6, 52.1],
+          [-0.8, 52.1],
+          [-0.8, 51.3],
+          [-1.6, 51.3]
+        ]]
+      }
+    }
+  ]
+}

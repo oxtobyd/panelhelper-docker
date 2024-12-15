@@ -8,12 +8,13 @@ import { AdviserDemographics } from './AdviserDemographics';
 import { DioceseCandidateStats } from './DioceseCandidateStats';
 import { MonthlyBreakdown } from './MonthlyBreakdown';
 import { MonthlyAttendance } from './MonthlyAttendance';
-import { BarChart3, Users, UserSquare2, Calendar, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, UserSquare2, Calendar, TrendingUp, Map } from 'lucide-react';
 import { AdviserEngagement } from './AdviserEngagement';
 import { AdviserStats } from './AdviserStats';
 import { VenueStatsBySeason } from './VenueStatsBySeason';
 import { VenueMap } from './VenueMap';
 import { ProgressionStats } from './ProgressionStats';
+import { DioceseCandidateHeatMap } from './DioceseCandidateHeatMap';
 import { useQuery } from '@tanstack/react-query';
 
 interface Stats {
@@ -43,6 +44,10 @@ interface OutcomeStats {
   max_score: number;
 }
 
+interface CandidateStats {
+  byDiocese: { diocese_name: string; total_candidates: number }[];
+}
+
 export const StatsDashboard: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [seasons, setSeasons] = useState<string[]>([]);
@@ -50,7 +55,25 @@ export const StatsDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dioceseStats, setDioceseStats] = useState<{ diocese_name: string; total_candidates: number; }[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'candidates' | 'advisers' | 'venues'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'candidates' | 'advisers' | 'venues' | 'diocese'>('overview');
+
+  const { data: statsData, isLoading: statsLoading } = useQuery({
+    queryKey: ['stats', selectedSeason],
+    queryFn: async () => {
+      const response = await fetch(`/api/reports/stats${selectedSeason ? `?season=${selectedSeason}` : ''}`);
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      return response.json();
+    }
+  });
+
+  const { data: candidateStats, isLoading: candidateStatsLoading } = useQuery({
+    queryKey: ['candidateStats', selectedSeason],
+    queryFn: async () => {
+      const response = await fetch(`/api/reports/candidate-stats${selectedSeason ? `?season=${selectedSeason}` : ''}`);
+      if (!response.ok) throw new Error('Failed to fetch candidate stats');
+      return response.json();
+    }
+  });
 
   const { data: outcomeStats } = useQuery<OutcomeStats[]>({
     queryKey: ['outcomeStats', selectedSeason],
@@ -105,13 +128,14 @@ export const StatsDashboard: React.FC = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!stats) return null;
+  if (!statsData) return null;
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'candidates', label: 'Candidates', icon: UserSquare2 },
     { id: 'advisers', label: 'Advisers', icon: Users },
     { id: 'venues', label: 'Venues & Schedule', icon: Calendar },
+    { id: 'diocese', label: 'Diocese', icon: Map },
   ];
 
   const outcomeColors: Record<string, string> = {
@@ -143,24 +167,24 @@ export const StatsDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Total Candidates"
-          value={stats.candidate_breakdown?.total_unique || 0}
-          subtitle={`${stats.candidate_breakdown?.both_types || 0} attended S1 & S2`}
+          value={statsData.candidate_breakdown?.total_unique || 0}
+          subtitle={`${statsData.candidate_breakdown?.both_types || 0} attended S1 & S2`}
           icon={<UserSquare2 />}
         />
         <StatsCard
           title="Active Advisers"
-          value={stats.active_advisers}
+          value={statsData.active_advisers}
           icon={<Users />}
         />
         <StatsCard
           title="Total Events"
-          value={Number(stats.total_carousels || 0) + Number(stats.total_panels || 0)}
-          subtitle={`${stats.total_carousels} carousels, ${stats.total_panels} panels`}
+          value={Number(statsData.total_carousels || 0) + Number(statsData.total_panels || 0)}
+          subtitle={`${statsData.total_carousels} carousels, ${statsData.total_panels} panels`}
           icon={<Calendar />}
         />
         <StatsCard
           title="Progression Rate"
-          value={`${stats.progression_rate}%`}
+          value={`${statsData.progression_rate}%`}
           subtitle="In Season Progression"
           icon={<TrendingUp />}
         />
@@ -300,6 +324,24 @@ export const StatsDashboard: React.FC = () => {
                 <p className="text-sm text-gray-500 mb-6">Geographical distribution of panel venues</p>
                 <VenueMap season={selectedSeason} />
               </div>
+            </div>
+          )}
+
+          {activeTab === 'diocese' && candidateStats?.byDiocese && (
+            <div className="space-y-6">
+              {console.log('Candidate stats in diocese tab:', candidateStats)}
+              <DioceseCandidateHeatMap 
+                dioceseStats={candidateStats.byDiocese.map(d => {
+                  console.log('Mapping diocese:', d);
+                  return {
+                    diocese_name: d.diocese_name,
+                    total_candidates: d.total_candidates,
+                    panel_count: 0,
+                    carousel_count: 0
+                  };
+                })}
+                season={selectedSeason}
+              />
             </div>
           )}
         </div>
