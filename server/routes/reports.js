@@ -287,10 +287,8 @@ router.get('/candidate-stats', async (req, res) => {
 
 // Get panel outcomes
 router.get('/panel-outcomes', async (req, res) => {
+    const { season } = req.query;
     try {
-        const { season } = req.query;
-        const params = [season || null];  // Use null if no season specified
-
         const query = `
             WITH outcomes_with_season AS (
                 SELECT 
@@ -298,6 +296,7 @@ router.get('/panel-outcomes', async (req, res) => {
                     calculate_season(completed_date) as season_calculated 
                 FROM panel_outcomes
                 WHERE panel_result_text IS NOT NULL
+                ${season ? "AND calculate_season(completed_date) = $1" : ""}
             ),
             categorized_outcomes AS (
                 SELECT 
@@ -319,16 +318,15 @@ router.get('/panel-outcomes', async (req, res) => {
                 outcome,
                 CAST(COUNT(*) AS INTEGER) as count
             FROM categorized_outcomes co
-            WHERE ($1::text IS NULL OR co.season_calculated = $1)
             GROUP BY outcome
             ORDER BY count DESC;
         `;
 
-        const result = await pool.query(query, params);
-        res.json(result.rows || []); // Ensure we always return an array
+        const result = await pool.query(query, season ? [season] : []);
+        res.json(result.rows);
     } catch (error) {
         console.error('Error fetching panel outcomes:', error);
-        res.status(500).json([]); // Return empty array on error instead of error message
+        res.status(500).json({ error: 'Failed to fetch outcome statistics' });
     }
 });
 
@@ -336,11 +334,6 @@ router.get('/panel-outcomes', async (req, res) => {
 router.get('/outcome-stats', async (req, res) => {
     const { season } = req.query;
     try {
-        let seasonFilter = '';
-        if (season) {
-            seasonFilter = 'WHERE calculated_season = $1';
-        }
-
         const query = `
             WITH normalized_outcomes AS (
                 SELECT 
@@ -361,10 +354,11 @@ router.get('/outcome-stats', async (req, res) => {
                           THEN 'Recommended'
                         ELSE panel_result_text 
                     END as outcome,
-                    (love_for_god + call_to_ministry + love_for_people + wisdom + fruitfulness + potential) / 6.0 as avg_score
+                    (love_for_god + call_to_ministry + love_for_people + wisdom + fruitfulness + potential) / 6.0 as avg_score,
+                    calculate_season(completed_date) as calculated_season
                 FROM panel_outcomes
-                ${seasonFilter}
                 WHERE panel_result_text IS NOT NULL
+                ${season ? "AND calculate_season(completed_date) = $1" : ""}
             )
             SELECT 
                 outcome,
